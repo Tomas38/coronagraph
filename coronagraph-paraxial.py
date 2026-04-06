@@ -6,16 +6,26 @@ import matplotlib.pyplot as plt
 # Lens 2 = Field lens (not exactly field lens to be correct)
 # Lens 3 = Relay lens
 
-R0 = 15  # External occulter radius
 Ra = 13  # Entrance pupil/aperture radius
-d0 = 500  # Distance between the external occulter and the entrance pupil/aperture
+
+# The Sun's angular size varies from 31' 27.7" to 32' 31.9"
+# http://sun.stanford.edu/~sasha/PHYS780/SOLAR_PHYSICS/L2/Lecture_02_PHYS780.pdf
+theta_sun = np.radians(32 / 60) / 2  # Angular size of the Sun in radians
+theta_v0 = 1.2 * theta_sun  # Maximal angle of 100 % vignetting
+theta_v1 = 15 * theta_sun  # Minimal angle of 0 % vignetting
+theta_m = 10 * theta_sun  # Maximal angle of the field of view
+
+t = np.tan(theta_v0) / np.tan(theta_v1)
+R0 = Ra * (1 + t) / (1 - t)  # External occulter radius
+d0 = (R0 + Ra) / np.tan(theta_v1) # Distance between the external occulter and the entrance pupil/aperture
+
 la = 5  # Distance between the entrance (a)perture/pupil and the objective lens
 ld = 5  # Distance between the internal occulting (d)isc and the field lens
 lL = 5  # Distance between the (L)yot stop and the relay lens
 f1_ = 150  # Focal length of the objective lens
 f2_ = 100  # Focal length of the field lens
 f3_ = 96.62  # Focal length of the relay lens
-Rf = 25  # Field stop radius
+Rf = f1_ * np.tan(theta_m)  # Field stop radius
 
 a1 = -np.inf  # Object distance for lens 1
 a1_ = f1_  # Image distance for lens 1
@@ -64,9 +74,11 @@ p2_P_ = - (f3_ * L2) / (f2_ + f3_ - L2)  # Position of the image principal plane
 
 f_c2 = (f1_ * f23_) / (f1_ + f23_ - (L1 + p1P))  # Total focal length using the combination of lens 1 and lens 2
 
-print(f"R0: {R0:.2f} mm")
-print(f"Rd: {Rd:.4f} mm")
 print(f"Ra': {Ra_:.4f} mm")
+print(f"R0: {R0:.2f} mm")
+print(f"d0: {d0:.4f} mm")
+print(f"Rd: {Rd:.4f} mm")
+print(f"Rf: {Rf:.4f} mm")
 print(f"RL: {RL:.4f} mm")
 print(f"Rf': {Rf_:.4f} mm")
 print(f"Ri: {Ri:.4f} mm")
@@ -112,7 +124,7 @@ print(f"EFFL using the combination of lens 1 and lens 2+3: {f_c2:.4f} mm")
 print(f"Magnification of lens 2 + lens 3: {beta23:.4f}")
 
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 one = np.array([1, 1])
 sym = np.array([1, -1])
@@ -128,6 +140,9 @@ ax.plot(one * (t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8), sym * Ri, '-', label='Ima
 ax.set_xlabel('Distance (mm)')
 ax.set_ylabel('Radius (mm)')
 ax.set_title('Paraxial Coronagraph Layout')
-ax.legend(ncol=4)
+ax.set_ylim(-100, 100)
+ax.set_aspect('equal', adjustable='box')
+fig.legend(ncol=4)
 ax.grid()
+#fig.tight_layout()
 plt.show()
