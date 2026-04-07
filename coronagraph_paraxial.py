@@ -65,7 +65,10 @@ class Coronagraph:
         self.a2 = -(self.L1 - self.a1_)  # Object distance for lens 2
         self.a2_ = 1 / (1 / self.f2_ + 1 / self.a2)  # Image distance for lens 2
 
-        self.la_ = 1 / (1 / self.f1_ + 1 / (-self.la))  # Position of the virtual image of the entrance aperture through lens 1
+        if self.la == 0.0:
+            self.la_ = 0.0
+        else:
+            self.la_ = 1 / (1 / self.f1_ + 1 / (-self.la))  # Position of the virtual image of the entrance aperture through lens 1
 
         self.f2_max = self.L1 - self.la_  # Maximal focal length of the field lens to ensure that the image of the entrance aperture through lens 2 is formed behind the lens 2
         if self.f2_max <= self.f2_:
@@ -87,7 +90,10 @@ class Coronagraph:
         self.beta23 = self.beta2 * self.beta3  # Total lateral magnification for the combination of lens 2 and lens 3
 
         self.Rd = self.R0 * self.dd / (self.d0 + self.la)  # Radius of the internal occulting disc
-        self.Ra_ = self.Ra * (-self.la_) / (self.la)  # Radius of the (virtual) image of the entrance aperture through lens 1
+        if self.la == 0.0:
+            self.Ra_ = 0.0
+        else:
+            self.Ra_ = self.Ra * (-self.la_) / (self.la)  # Radius of the (virtual) image of the entrance aperture through lens 1
         self.RL = self.Ra_ * self.dL / (self.L1 - self.la_)  # Radius of the Lyot stop
 
         self.Rf_ = self.Rf * (-self.beta2)  # Radius of the field stop
