@@ -130,6 +130,10 @@ class Coronagraph:
         self.t7 = self.lL  # Distance from the Lyot stop to lens 3
         self.t8 = self.L3  # Distance from lens 3 to the image plane
 
+        self.R1 = self.Ra + self.la * np.tan(self.theta_m)  # Radius (minimal) of the Lens 1
+        r2 = ((self.t4 + self.t5) / (self.t3)) * (self.Rf - self.Ra - self.la * np.tan(self.theta_m))
+        self.R2 = self.Rf + r2 # Radius (minimal) of the Lens 2
+
         self.f_c = (self.a1_ * self.a2_ * self.a3_) / (self.a2 * self.a3)  # Total focal length
 
         self.f23_ = (self.f2_ * self.f3_) / (self.f2_ + self.f3_ - self.L2)  # Focal length of the combination of lens 2 and lens 3
