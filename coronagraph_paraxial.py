@@ -3,20 +3,42 @@ import matplotlib.pyplot as plt
 
 
 class Coronagraph:
-    # This class calculates axial distances of optical components in Lyot configuration with external occulter.
-    def __init__(
-            self,
-            Ra,  # Entrance pupil/aperture radius
-            theta_v0,  # Maximal angle of 100 % vignetting
-            theta_v1,  # Minimal angle of 0 % vignetting
-            theta_m,  # Maximal angle of the field of view
-            la=0.0,  # Distance between the entrance (a)perture/pupil and the objective lens
-            ld=0.0,  # Distance between the internal occulting (d)isc and the field lens
-            lL=0.0,  # Distance between the (L)yot stop and the relay lens
-            f1_=150.0,  # Focal length of the objective lens
-            f2_=100.0,  # Focal length of the field lens
-            f3_=96.62  # Focal length of the relay lens
-            ):
+    def __init__(self, Ra, theta_v0, theta_v1, theta_m, la=0.0, ld=0.0, lL=0.0, f1_=150.0, f2_=100.0, f3_=96.62):
+        """This class calculates axial distances of optical components in Lyot configuration with external occulter.
+
+        Parameters
+        ----------
+        Ra : _type_
+            Entrance pupil/aperture radius
+        theta_v0 : _type_
+            Maximal angle of 100 % vignetting
+        theta_v1 : _type_
+            Minimal angle of 0 % vignetting
+        theta_m : _type_
+            Maximal angle of the field of view
+        la : float, optional
+            Distance between the entrance (a)perture/pupil and the objective lens, by default 0.0
+        ld : float, optional
+            Distance between the internal occulting (d)isc and the field lens, by default 0.0
+        lL : float, optional
+            Distance between the (L)yot stop and the relay lens, by default 0.0
+        f1_ : float, optional
+            Focal length of the objective lens, by default 150.0
+        f2_ : float, optional
+            Focal length of the field lens, by default 100.0
+        f3_ : float, optional
+            Focal length of the relay lens, by default 96.62
+
+        Raises
+        ------
+        ValueError
+            If the focal length of the objective lens is larger than the distance between the external occulter and the objective lens.
+        ValueError
+            If the focal length of the field lens is larger than the distance between the virtual image of the entrance aperture and lens 2.
+        ValueError
+            If the focal length of the relay lens is larger than the distance of the virtual object to be displayed and the relay lens.
+        """
+        
         # Lens 1 = Objective lens
         # Lens 2 = Field lens (not exactly field lens to be correct)
         # Lens 3 = Relay lens
