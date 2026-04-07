@@ -113,7 +113,7 @@ class Coronagraph:
 
         self.Rd = self.R0 * self.dd / (self.d0 + self.la)  # Radius of the internal occulting disc
         if self.la == 0.0:
-            self.Ra_ = 0.0
+            self.Ra_ = self.Ra
         else:
             self.Ra_ = self.Ra * (-self.la_) / (self.la)  # Radius of the (virtual) image of the entrance aperture through lens 1
         self.RL = self.Ra_ * self.dL / (self.L1 - self.la_)  # Radius of the Lyot stop
