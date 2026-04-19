@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Coronagraph:
@@ -78,18 +78,23 @@ class Coronagraph:
 
         t = np.tan(self.theta_v0) / np.tan(self.theta_v1)
         self.R0 = Ra * (1 + t) / (1 - t)  # External occulter radius
-        self.d0 = (self.R0 + Ra) / np.tan(self.theta_v1) # Distance between the external occulter and the entrance pupil/aperture
+        # Distance between the external occulter and the entrance pupil/aperture
+        self.d0 = (self.R0 + Ra) / np.tan(self.theta_v1)
 
-        self.f1_max = self.d0 + self.la  # Maximal focal length of the objective lens to ensure that the image of the external occulter is formed behind the objective lens
+        # Maximal focal length of the objective lens to ensure that the image
+        # of the external occulter is formed behind the objective lens
+        self.f1_max = self.d0 + self.la
         if self.f1_max <= self.f1_:
-            raise ValueError("The focal length of the objective lens is larger than the distance between the external occulter and the objective lens.")
+            raise ValueError("The focal length of the objective lens is larger " \
+            "than the distance between the external occulter and the objective lens.")
         
         self.Rf = self.f1_ * np.tan(self.theta_m)  # Field stop radius
 
         self.a1 = -np.inf  # Object distance for lens 1
         self.a1_ = self.f1_  # Image distance for lens 1
 
-        self.dd = 1 / (1 / self.a1_ + 1 / (-(self.d0 + self.la)))  # Distance from lens 1 to the occulting disc
+        # Distance from lens 1 to the occulting disc
+        self.dd = 1 / (1 / self.a1_ + 1 / (-(self.d0 + self.la)))
         self.L1 = self.dd + self.ld  # Distance between lens 1 and lens 2
 
         self.a2 = -(self.L1 - self.a1_)  # Object distance for lens 2
@@ -98,32 +103,42 @@ class Coronagraph:
         if self.la == 0.0:
             self.la_ = 0.0
         else:
-            self.la_ = 1 / (1 / self.f1_ + 1 / (-self.la))  # Position of the virtual image of the entrance aperture through lens 1
+            # Position of the virtual image of the entrance aperture through lens 1
+            self.la_ = 1 / (1 / self.f1_ + 1 / (-self.la))
 
-        self.f2_max = self.L1 - self.la_  # Maximal focal length of the field lens to ensure that the image of the entrance aperture through lens 2 is formed behind the lens 2
+        # Maximal focal length of the field lens to ensure that the image
+        # of the entrance aperture through lens 2 is formed behind the lens 2
+        self.f2_max = self.L1 - self.la_
         if self.f2_max <= self.f2_:
             # equivalent to self.dL < 0.0 condition
-            raise ValueError("The focal length of the field lens is larger than the distance between the virtual image of the entrance aperture and lens 2.")
-
-        self.dL = 1 / (1 / self.f2_ + 1 / (-(self.L1 - self.la_)))  # Distance from Lyot stop to lens 3
+            raise ValueError("The focal length of the field lens is larger " \
+            "than the distance between the virtual image of the entrance aperture and lens 2.")
+        
+        # Distance from Lyot stop to lens 3
+        self.dL = 1 / (1 / self.f2_ + 1 / (-(self.L1 - self.la_)))
         self.L2 = self.dL + self.lL  # Distance between lens 2 and lens 3
         self.a3 = -(self.L2 - self.a2_)  # Object distance for lens 3
 
         self.a3_ = 1 / (1 / self.f3_ + 1 / self.a3)  # Image distance for lens 3
-        self.f3_max = self.L2 - self.a2_  # Maximal focal length of the relay lens to ensure that the image of the entrance aperture through lens 3 is formed behind the lens 3
+        # Maximal focal length of the relay lens to ensure that the image of
+        # the entrance aperture through lens 3 is formed behind the lens 3
+        self.f3_max = self.L2 - self.a2_
         if self.f3_max <= self.f3_:
-            raise ValueError("The focal length of the relay lens is larger than the distance of the virtual object to be displayed and the relay lens.")
+            raise ValueError("The focal length of the relay lens is larger than " \
+            "the distance of the virtual object to be displayed and the relay lens.")
         self.L3 = self.a3_  # Distance between lens 3 and the image plane
 
         self.beta2 = self.a2_ / self.a2  # Lateral magnification for lens 2
         self.beta3 = self.a3_ / self.a3  # Lateral magnification for lens 3
-        self.beta23 = self.beta2 * self.beta3  # Total lateral magnification for the combination of lens 2 and lens 3
+        # Total lateral magnification for the combination of lens 2 and lens 3
+        self.beta23 = self.beta2 * self.beta3
 
         self.Rd = self.R0 * self.dd / (self.d0 + self.la)  # Radius of the internal occulting disc
         if self.la == 0.0:
             self.Ra_ = self.Ra
         else:
-            self.Ra_ = self.Ra * (-self.la_) / (self.la)  # Radius of the (virtual) image of the entrance aperture through lens 1
+            # Radius of the (virtual) image of the entrance aperture through lens 1
+            self.Ra_ = self.Ra * (-self.la_) / (self.la)
         self.RL = self.Ra_ * self.dL / (self.L1 - self.la_)  # Radius of the Lyot stop
 
         self.Rf_ = self.Rf * (-self.beta2)  # Radius of the field stop
@@ -139,19 +154,30 @@ class Coronagraph:
         self.t8 = self.L3  # Distance from lens 3 to the image plane
 
         self.R1 = self.Ra + self.la * np.tan(self.theta_m)  # Radius (minimal) of the Lens 1
-        r2 = ((self.t4 + self.t5) / (self.t3)) * (self.Rf + self.Ra - self.la * np.tan(self.theta_m))
+        r2 = (((self.t4 + self.t5) / (self.t3)) * 
+              (self.Rf + self.Ra - self.la * np.tan(self.theta_m)))
         self.R2 = self.Rf + r2 # Radius (minimal) of the Lens 2
 
         self.f_c = (self.a1_ * self.a2_ * self.a3_) / (self.a2 * self.a3)  # Total focal length
 
-        self.f23_ = (self.f2_ * self.f3_) / (self.f2_ + self.f3_ - self.L2)  # Focal length of the combination of lens 2 and lens 3
+        # Focal length of the combination of lens 2 and lens 3
+        self.f23_ = (self.f2_ * self.f3_) / (self.f2_ + self.f3_ - self.L2)
         self.f23 = - self.f23_
-        self.p1F = - (self.f3_ - self.L2) * self.f2_ / (self.f2_ + self.f3_ - self.L2)  # Position of the object focal plane of the combination of lens 2 and lens 3 with respect to lens 2
-        self.p2_F_ = (self.f2_ - self.L2) * self.f3_ / (self.f2_ + self.f3_ - self.L2)  # Position of the image focal plane of the combination of lens 2 and lens 3 with respect to lens 3
-        self.p1P = + (self.f2_ * self.L2) / (self.f2_ + self.f3_ - self.L2)  # Position of the object principal plane of the combination of lens 2 and lens 3 with respect to lens 2
-        self.p2_P_ = - (self.f3_ * self.L2) / (self.f2_ + self.f3_ - self.L2)  # Position of the image principal plane of the combination of lens 2 and lens 3 with respect to lens 3
+        # Position of the object focal plane of the combination of 
+        # lens 2 and lens 3 with respect to lens 2
+        self.p1F = - (self.f3_ - self.L2) * self.f2_ / (self.f2_ + self.f3_ - self.L2)
+        # Position of the image focal plane of the combination of 
+        # lens 2 and lens 3 with respect to lens 3
+        self.p2_F_ = (self.f2_ - self.L2) * self.f3_ / (self.f2_ + self.f3_ - self.L2)
+        # Position of the object principal plane of the combination 
+        # of lens 2 and lens 3 with respect to lens 2
+        self.p1P = + (self.f2_ * self.L2) / (self.f2_ + self.f3_ - self.L2)
+        # Position of the image principal plane of the combination 
+        # of lens 2 and lens 3 with respect to lens 3
+        self.p2_P_ = - (self.f3_ * self.L2) / (self.f2_ + self.f3_ - self.L2)
 
-        self.f_c2 = (self.f1_ * self.f23_) / (self.f1_ + self.f23_ - (self.L1 + self.p1P))  # Total focal length using the combination of lens 1 and lens 2
+        # Total focal length using the combination of lens 1 and lens 2
+        self.f_c2 = (self.f1_ * self.f23_) / (self.f1_ + self.f23_ - (self.L1 + self.p1P))
 
 
 if __name__ == "__main__":
@@ -162,7 +188,8 @@ if __name__ == "__main__":
     theta_v1 = 15 * theta_sun  # Minimal angle of 0 % vignetting
     theta_m = 10 * theta_sun  # Maximal angle of the field of view
 
-    cor = Coronagraph(Ra=13, theta_v0=theta_v0, theta_v1=theta_v1, theta_m=theta_m, la=5, ld=5, lL=5, f1_=150, f2_=100, f3_=96.62)
+    cor = Coronagraph(Ra=13, theta_v0=theta_v0, theta_v1=theta_v1, theta_m=theta_m,
+                      la=5, ld=5, lL=5, f1_=150, f2_=100, f3_=96.62)
 
     print(f"Ra': {cor.Ra_:.4f} mm")
     print(f"R0: {cor.R0:.2f} mm")
@@ -222,11 +249,17 @@ if __name__ == "__main__":
     ax.plot(one * cor.t1, sym * cor.Ra, '-', label='Entrance Aperture')
     ax.plot(one * (cor.t1 + cor.t2), sym * cor.Ra, '-', label='Objective Lens')
     ax.plot(one * (cor.t1 + cor.t2 + cor.t3), sym * cor.Rf, '-', label='Field Stop')
-    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4), sym * cor.Rd, '-', label='Internal Occulting Disc')
-    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5), sym * cor.Ra, '-', label='Field Lens')
-    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6), sym * cor.RL, '-', label='Lyot Stop')
-    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6 + cor.t7), sym * cor.Ra, '-', label='Relay Lens')
-    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6 + cor.t7 + cor.t8), sym * cor.Ri, '-', label='Image Plane')
+    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4), sym * cor.Rd, 
+            '-', label='Internal Occulting Disc')
+    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5), sym * cor.Ra, 
+            '-', label='Field Lens')
+    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6), sym * cor.RL, 
+            '-', label='Lyot Stop')
+    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6 + cor.t7), sym * cor.Ra, 
+            '-', label='Relay Lens')
+    ax.plot(one * (cor.t1 + cor.t2 + cor.t3 + cor.t4 + cor.t5 + cor.t6 + cor.t7 + cor.t8), 
+            sym * cor.Ri, 
+            '-', label='Image Plane')
     ax.set_xlabel('Distance (mm)')
     ax.set_ylabel('Radius (mm)')
     ax.set_title('Paraxial Coronagraph Layout')
