@@ -4,9 +4,24 @@ build-backend = "hatchling.build"
 
 [project]
 name = "coronagraph"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.12"
 dependencies = [
     "numpy",
     "matplotlib",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-jupyter",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

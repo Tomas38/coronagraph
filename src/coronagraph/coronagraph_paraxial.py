@@ -3,8 +3,13 @@ import matplotlib.pyplot as plt
 
 
 class Coronagraph:
-    def __init__(self, Ra, theta_v0, theta_v1, theta_m, la=0.0, ld=0.0, lL=0.0, f1_=150.0, f2_=100.0, f3_=96.62):
-        """This class calculates axial distances of optical components in Lyot configuration with external occulter.
+    def __init__(self, Ra,
+                 theta_v0, theta_v1,
+                 theta_m, la=0.0,
+                 ld=0.0, lL=0.0,
+                 f1_=150.0, f2_=100.0, f3_=96.62):
+        """This class calculates axial distances of optical components
+        in Lyot configuration with external occulter.
 
         Parameters
         ----------
@@ -32,11 +37,14 @@ class Coronagraph:
         Raises
         ------
         ValueError
-            If the focal length of the objective lens is larger than the distance between the external occulter and the objective lens.
+            If the focal length of the objective lens is larger than the distance
+            between the external occulter and the objective lens.
         ValueError
-            If the focal length of the field lens is larger than the distance between the virtual image of the entrance aperture and lens 2.
+            If the focal length of the field lens is larger than the distance
+            between the virtual image of the entrance aperture and lens 2.
         ValueError
-            If the focal length of the relay lens is larger than the distance of the virtual object to be displayed and the relay lens.
+            If the focal length of the relay lens is larger than the distance
+            of the virtual object to be displayed and the relay lens.
         """
         
         # Lens 1 = Objective lens
@@ -53,9 +61,9 @@ class Coronagraph:
         # L3 = Lens 3
         # IM = Image plane
 
-        # (EO) <----d0----> (AP) <-la-> (L1) <-------------L1-------------> (L2) <--------L2------> (L3) <-L3-> (IM)
-        # (EO) <----d0----> (AP) <-la-> (L1) <-------dd-------> (IO) <-ld-> (L2) <-dL-> (LS) <-lL-> (L3) <-L3-> (IM)
-        # (EO) <----t1----> (AP) <-t2-> (L1) <-t3-> [FP] <-t4-> (IO) <-t5-> (L2) <-t6-> (LS) <-t7-> (L3) <-t8-> (IM)
+        # (EO) <--d0--> (AP) <la> (L1) <-----L1-----> (L2) <-----------L2---------> (L3) <L3> (IM)
+        # (EO) <--d0--> (AP) <la> (L1) <-----dd-----> (IO) <ld> (L2) <dL> (LS) <lL> (L3) <L3> (IM)
+        # (EO) <--t1--> (AP) <t2> (L1) <t3> [FP] <t4> (IO) <t5> (L2) <t6> (LS) <t7> (L3) <t8> (IM)
 
         self.Ra = Ra
         self.theta_v0 = theta_v0
