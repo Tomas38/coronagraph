@@ -32,6 +32,7 @@ site/
 
 # Jupyter
 .ipynb_checkpoints/
+.cache/
 
 # VS Code
 .vscode/settings.json
