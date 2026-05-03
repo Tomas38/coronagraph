@@ -1,5 +1,8 @@
+from typing import Any, overload
+
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 
 
 class Coronagraph:
@@ -178,6 +181,60 @@ class Coronagraph:
 
         # Total focal length using the combination of lens 1 and lens 2
         self.f_c2 = (self.f1_ * self.f23_) / (self.f1_ + self.f23_ - (self.L1 + self.p1P))
+
+    @overload
+    def vignetting(self, theta: float) -> float:
+        ...
+
+    @overload
+    def vignetting(self, theta: npt.NDArray[np.floating[Any]]) -> npt.NDArray[np.floating[Any]]:
+        ...
+
+    def vignetting(
+        self,
+        theta: float | npt.NDArray[np.floating[Any]],
+    ) -> float | npt.NDArray[np.floating[Any]]:
+        """Calculate the vignetting for a given angle.
+
+        Parameters
+        ----------
+        theta : float or numpy.ndarray
+            Angle(s) in radians
+
+        Returns
+        -------
+        float or numpy.ndarray
+            Vignetting factor(s) between 0 and 1
+        """
+        theta_arr = np.asarray(theta)
+        is_scalar_input = np.ndim(theta_arr) == 0
+        theta_arr = np.atleast_1d(theta_arr).astype(float)
+
+        vign = np.empty_like(theta_arr, dtype=float)
+        mask_full = theta_arr < self.theta_v0
+        mask_none = theta_arr > self.theta_v1
+        mask_partial = ~(mask_full | mask_none)
+
+        vign[mask_full] = 1.0
+        vign[mask_none] = 0.0
+
+        if np.any(mask_partial):
+            x_theta = self.d0 * np.tan(theta_arr[mask_partial])
+
+            alpha_arg = (self.R0**2 + x_theta**2 - self.Ra**2) / (2 * self.R0 * x_theta)
+            beta_arg = (x_theta**2 + self.Ra**2 - self.R0**2) / (2 * x_theta * self.Ra)
+            alpha = np.arccos(np.clip(alpha_arg, -1.0, 1.0))
+            beta = np.arccos(np.clip(beta_arg, -1.0, 1.0))
+
+            area_aper_vignetted = ((np.pi - beta) * self.Ra**2
+                                   + x_theta * self.R0 * np.sin(alpha)
+                                   - alpha * self.R0**2)
+            area_aper_unvignetted = np.pi * self.Ra**2
+            vign[mask_partial] = 1.0 - area_aper_vignetted / area_aper_unvignetted
+
+        if is_scalar_input:
+            return float(vign[0])
+        return vign
 
 
 if __name__ == "__main__":
