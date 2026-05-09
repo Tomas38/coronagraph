@@ -28,6 +28,7 @@ site/
 
 # Environment variables
 .env
+.corenv
 *.env
 
 # Jupyter
