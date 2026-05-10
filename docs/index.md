@@ -1,17 +1,26 @@
-# Welcome to MkDocs
+# Welcome Coronograph package documentation
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+## About
 
-## Commands
+A paraxial coronagraph model for calculating axial distances of optical 
+components in Lyot configuration with external occulter.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+## Installation
 
-## Project layout
+```bash
+pip install git+https://github.com/tomas38/coronagraph.git
+```
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## Quick Start
+
+```python
+from coronagraph import Coronagraph
+
+c = Coronagraph(Ra=0.05, theta_v0=0.1, theta_v1=0.2, theta_m=0.3)
+```
+
+## Contents
+
+- Usage
+  - [Coronagraph theory](coronagraph_theory.md)
+  - [Vignetting](Vignetting.ipynb)
