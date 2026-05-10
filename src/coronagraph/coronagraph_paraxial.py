@@ -193,7 +193,7 @@ class Coronagraph:
         self,
         theta: float | npt.NDArray[np.floating[Any]],
     ) -> float | npt.NDArray[np.floating[Any]]:
-        """Calculate the vignetting for a given angle.
+        """Calculate the vignetting for a given angle. Returns 1 for angles larger than theta_m.
 
         Parameters
         ----------
@@ -212,10 +212,12 @@ class Coronagraph:
         vign = np.empty_like(theta_arr, dtype=float)
         mask_full = theta_arr < self.theta_v0
         mask_none = theta_arr > self.theta_v1
+        mask_large = theta_arr > self.theta_m
         mask_partial = ~(mask_full | mask_none)
 
         vign[mask_full] = 1.0
         vign[mask_none] = 0.0
+        vign[mask_large] = 1.0
 
         if np.any(mask_partial):
             x_theta = self.d0 * np.tan(theta_arr[mask_partial])
