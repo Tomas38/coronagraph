@@ -124,7 +124,7 @@ class Coronagraph:
         self.a3_ = 1 / (1 / self.f3_ + 1 / self.a3)  # Image distance for lens 3
         # Maximal focal length of the relay lens to ensure that the image of
         # the entrance aperture through lens 3 is formed behind the lens 3
-        self.f3_max = self.L2 - self.a2_
+        self.f3_max = -self.a3_
         if self.f3_max <= self.f3_:
             raise ValueError("The focal length of the relay lens is larger than " \
             "the distance of the virtual object to be displayed and the relay lens.")
